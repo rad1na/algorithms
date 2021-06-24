@@ -1,0 +1,10 @@
+.siderLogoWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 64px;
+}
+
+.siderLogoWrapper :global(img) {
+  max-height: 56px;
+}
