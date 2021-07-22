@@ -24,7 +24,6 @@ export const PrimComponent = (props) => {
   const [disabled, setDisabled] = useState(false);
   const [drawLines, setDrawLines] = useState(false);
   const [lines, setLines] = useState([]);
-  const [finalNodesArray, setFinalNodesArray] = useState([]);
   const [form] = Form.useForm();
 
   const calculateDistances = (node) => {
@@ -55,7 +54,6 @@ export const PrimComponent = (props) => {
   };
 
   const generateLine = (first, second) => {
-    console.log();
     return (
       <Line
         points={[first.left, first.top, second.left, second.top]}
@@ -83,7 +81,7 @@ export const PrimComponent = (props) => {
     let newLines = [];
     let arrOfShortestDistances = [];
     let path = [];
-    while (newArr.length !== numOfNodes) {
+    while (newArr.length < numOfNodes) {
       if (newArr.length === 0) {
         setPositions(
           positions.map((el) => {
@@ -114,16 +112,6 @@ export const PrimComponent = (props) => {
           distance: shortestDistance,
         });
         newLines.push(generateLine(startingNodeEl, filteredEl));
-        // let newPos = positions.map((el) => {
-        //   if (el.index === startingNodeEl.index)
-        //     el.distances = el.distances.filter((el) => el !== filteredEl.index);
-        //   else if (el.index === filteredEl.index)
-        //     el.distances = el.distances.filter(
-        //       (el) => el !== startingNodeEl.index
-        //     );
-        //   else return el;
-        // });
-        // setPositions(newPos);
       } else {
         console.log(newArr, "Trenutni clanovi");
         let positionsLeft = positions
@@ -132,23 +120,21 @@ export const PrimComponent = (props) => {
           })
           .filter((el) => !!el);
         console.log(positionsLeft);
+        console.log(arrOfShortestDistances);
         let onlyDistances = [];
         positionsLeft.forEach((pos) => {
           pos.distances.forEach((dist) => {
-            if (!arrOfShortestDistances.includes(dist.distance))
+            if (
+              !arrOfShortestDistances.includes(dist.distance) &&
+              !newArr.includes(dist.index)
+            )
               onlyDistances.push(dist.distance);
           });
         });
         console.log(onlyDistances);
 
         let shortestDistance = Math.min(...onlyDistances);
-        // if (arrOfShortestDistances.includes(shortestDistance)) {
-        //   shortestDistance = Math.min(
-        //     ...onlyDistances.filter((el) => el !== shortestDistance)
-        //   );
         arrOfShortestDistances.push(shortestDistance);
-        // } else arrOfShortestDistances.push(shortestDistance);
-        // console.log(arrOfShortestDistances, "SHORTEST");
         positionsLeft.forEach((pos) => {
           let checkIfIncludesDistance = pos.distances.filter(
             (dist) => dist.distance === shortestDistance
@@ -169,7 +155,6 @@ export const PrimComponent = (props) => {
         });
       }
     }
-    setFinalNodesArray(newArr);
     setLines(newLines);
     setDrawLines(true);
     console.log(path, "PATH");
@@ -205,7 +190,7 @@ export const PrimComponent = (props) => {
         <Col span={16} style={{ display: "flex", justifyContent: "center" }}>
           <Form layout={"inline"} size="large" form={form}>
             <Form.Item
-              label="Unesite broj cvorova"
+              label="Unesite broj čvorova"
               name="nodes"
               initialValue={5}
             >
@@ -217,7 +202,7 @@ export const PrimComponent = (props) => {
               />
             </Form.Item>
             <Form.Item
-              label="Izaberite pocetni cvor"
+              label="Izaberite pocetni čvor"
               name="starting"
               initialValue={1}
             >
@@ -231,7 +216,7 @@ export const PrimComponent = (props) => {
               </Select>
             </Form.Item>
             <Button size="large" type="primary" onClick={findMst}>
-              Pronadji MST
+              Pronađi MST
             </Button>
             <Button
               type="primary"
@@ -256,7 +241,7 @@ export const PrimComponent = (props) => {
                   index: positions.length,
                 },
               ])
-            : message.warning("Ne mozete dodavati vise cvorova")
+            : message.warning("Ne možete dodavati vise čvorova")
         }
         className={styles.canvasWrapper}
       >
@@ -282,7 +267,7 @@ export const PrimComponent = (props) => {
               </>
             ))
           ) : (
-            <Text text="Kliknite da biste dodali cvorista" x={10} y={10} />
+            <Text text="Kliknite da biste dodali čvorista" x={10} y={10} />
           )}
           {lines.length && drawLines ? lines.map((el) => el) : null}
         </Layer>

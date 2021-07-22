@@ -7,15 +7,36 @@ import {
   Row,
   Col,
   message,
-  Select,
   Timeline,
   notification,
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import styles from "./KruskalComponent.module.css";
 import { Stage, Layer, Text, Circle, Line } from "react-konva";
+import { kruskalSet } from "./set";
 
-const { Option } = Select;
+const minimalEdge = (edges) => {
+  let min = null;
+  for (const item of edges) {
+    min = min ? (item[2] < min[2] ? item : min) : item;
+  }
+  return min;
+};
+
+const getMst = (edges, lines) => {
+  let finalArr = [];
+  let edgesCopy = edges.slice(0);
+  let set1 = kruskalSet;
+  set1.make(lines);
+  while (finalArr.length < lines.length - 1) {
+    let min = minimalEdge(edgesCopy);
+    if (set1.union(lines[min[0]], lines[min[1]])) {
+      finalArr.push(min);
+    }
+    edgesCopy.splice(edgesCopy.indexOf(min), 1);
+  }
+  return finalArr;
+};
 
 export const KruskalComponent = (props) => {
   const [positions, setPositions] = useState([]);
@@ -23,7 +44,6 @@ export const KruskalComponent = (props) => {
   const [disabled, setDisabled] = useState(false);
   const [drawLines, setDrawLines] = useState(false);
   const [lines, setLines] = useState([]);
-  const [finalNodesArray, setFinalNodesArray] = useState([]);
   const [form] = Form.useForm();
 
   const calculateDistances = (node) => {
@@ -54,7 +74,6 @@ export const KruskalComponent = (props) => {
   };
 
   const generateLine = (first, second) => {
-    console.log();
     return (
       <Line
         points={[first.left, first.top, second.left, second.top]}
@@ -81,6 +100,7 @@ export const KruskalComponent = (props) => {
     let nodesIncluded = [];
     let sets = [];
     let path = [];
+    let newLines = [];
     setPositions(
       positions.map((el) => {
         el.distances = calculateDistances(el);
@@ -102,19 +122,46 @@ export const KruskalComponent = (props) => {
         return a.distance - b.distance;
       })
       .filter((el, index) => index % 2 !== 0);
-    // while (nodesIncluded.length !== numOfNodes || distancesSorted.length) {
-    if (!nodesIncluded.length) {
-      nodesIncluded = [distancesSorted[0].from, distancesSorted[0].to];
-      sets.push([distancesSorted[0].from, distancesSorted[0].to]);
-      path.push(distancesSorted[0]);
-      distancesSorted.shift();
-    } else {
-    }
-    // }
+    console.log(distancesSorted, "distance");
+    let circles = () => {
+      let arr = [];
+      for (let i = 0; i < numOfNodes; i++) arr.push(i);
+      return arr;
+    };
+    let edges = () => {
+      let arr = [];
+      distancesSorted.forEach((dist) =>
+        arr.push([dist.from, dist.to, dist.distance])
+      );
+      return arr;
+    };
+    let kruskalResult = getMst(edges(), circles());
+    kruskalResult.forEach((el) => {
+      let pos1 = positions.filter((elem) => elem.index === el[0])[0];
+      let pos2 = positions.filter((elem) => elem.index === el[1])[0];
+      newLines.push(generateLine(pos1, pos2));
+    });
+    console.log(kruskalResult, "TREE");
     console.log(positions, "pos");
     console.log(distancesSorted, "SORTED");
     console.log(sets, "SETS");
     console.log(path, "PATH");
+    console.log(nodesIncluded, "nodes");
+    setLines(newLines);
+    setDrawLines(true);
+    notification.open({
+      duration: 0,
+      message: "Redosled",
+      description: (
+        <Timeline style={{ marginTop: "2rem" }}>
+          {kruskalResult.map((el) => (
+            <Timeline.Item color="red">{`${el[0]} → ${
+              el[1]
+            } ; distanca ≈ ${parseInt(el[2])}px`}</Timeline.Item>
+          ))}
+        </Timeline>
+      ),
+    });
   };
 
   return (
@@ -124,7 +171,7 @@ export const KruskalComponent = (props) => {
         <Col span={16} style={{ display: "flex", justifyContent: "center" }}>
           <Form layout={"inline"} size="large" form={form}>
             <Form.Item
-              label="Unesite broj cvorova"
+              label="Unesite broj čvorova"
               name="nodes"
               initialValue={5}
             >
@@ -136,7 +183,7 @@ export const KruskalComponent = (props) => {
               />
             </Form.Item>
             <Button size="large" type="primary" onClick={findMst}>
-              Pronadji MST
+              Pronađi MST
             </Button>
             <Button
               type="primary"
@@ -161,7 +208,7 @@ export const KruskalComponent = (props) => {
                   index: positions.length,
                 },
               ])
-            : message.warning("Ne mozete dodavati vise cvorova")
+            : message.warning("Ne možete dodavati više čvorova")
         }
         className={styles.canvasWrapper}
       >
@@ -187,7 +234,7 @@ export const KruskalComponent = (props) => {
               </>
             ))
           ) : (
-            <Text text="Kliknite da biste dodali cvorista" x={10} y={10} />
+            <Text text="Kliknite da biste dodali čvorista" x={10} y={10} />
           )}
           {lines.length && drawLines ? lines.map((el) => el) : null}
         </Layer>
