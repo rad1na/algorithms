@@ -73,7 +73,9 @@ export const MainLayout = (props) => {
             </div>
           </Content>
           <Footer style={{ textAlign: "center" }}>
-            Petar Radinovic 17/20 - SPR Master
+            Petar Radinovic 17/20 - SPR Master <br/>
+            Stefan Milikic 15/20 - SPR Master <br/>
+            Nebojsa Bojanovic /20 - SPR Master
           </Footer>
         </Layout>
       </Layout>

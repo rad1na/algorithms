@@ -1,0 +1,27 @@
+.todoContainer{
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.todoContainer > div{
+    margin-bottom: 100px;
+}
+
+.todoItemBox{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.deleteBtn:hover{
+    color: rgb(210, 68, 68);
+    transition: 0.2s;
+}
+
+.todoItemBox > span{
+    margin: 0 1rem;
+    font-size: 1.5rem;
+    color: rgb(137, 137, 137)
+}
