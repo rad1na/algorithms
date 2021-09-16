@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://crudcrud.com/api/4b16a97834304f4d8f5d715c10434633";
+const baseURL = "https://crudcrud.com/api/b514c1d2901d465ea630cd5d001067d6";
 
 const axiosInstance = axios.create({
   baseURL: baseURL,

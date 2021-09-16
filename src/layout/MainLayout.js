@@ -8,7 +8,7 @@ import styles from "./MainLayout.module.css";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-export const MainLayout = (props) => {
+export const MainLayout = props => {
   const [siderCollapsed, setSiderCollapsed] = useState(false);
 
   return (
@@ -73,9 +73,9 @@ export const MainLayout = (props) => {
             </div>
           </Content>
           <Footer style={{ textAlign: "center" }}>
-            Petar Radinovic 17/20 - SPR Master <br/>
-            Stefan Milikic 15/20 - SPR Master <br/>
-            Nebojsa Bojanovic /20 - SPR Master
+            Petar Radinovic 17/20 - SPR Master <br />
+            Stefan Milikic 15/20 - SPR Master <br />
+            Nebojsa Bojanovic 16/20 - SPR Master
           </Footer>
         </Layout>
       </Layout>
